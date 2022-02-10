@@ -6,3 +6,19 @@ services:
     ports:
       - "5432:5432"
 
+  import:
+    image: openmaptiles/openmaptiles-tools
+    env_file:
+      - .env
+    volumes:
+      - ./:/tileset
+      - ./data:/import
+    command: sh -c "/tileset/import.sh"
+
+  tileserv:
+    image: pramsey/pg_tileserv
+    environment:
+      DATABASE_URL: "postgresql://$PGUSER:$PGPASSWORD@$PGHOST/$PGDATABASE"
+    ports:
+      - "7800:7800"
+    restart: on-failure
